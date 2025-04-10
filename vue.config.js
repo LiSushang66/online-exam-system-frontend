@@ -26,6 +26,8 @@ module.exports = {
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
 
+  transpileDependencies: [],
+  runtimeCompiler: true,
   publicPath: './',
   outputDir: 'dist',
   assetsDir: 'static',
@@ -90,7 +92,7 @@ module.exports = {
       })
       .end()
 
-    config.when(process.env.NODE_ENV  != 'development', (config) => {
+    config.when(process.env.NODE_ENV !== 'development', (config) => {
       config
         .plugin('ScriptExtHtmlWebpackPlugin')
         .after('html')

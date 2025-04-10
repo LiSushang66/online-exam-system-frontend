@@ -457,7 +457,7 @@ export default {
       this.statisticsDialogVisible = true
     },
 
-    // 点击弹框中“确定结束”按钮后的处理：关闭弹框并进行跳转或其他后续处理
+    // 点击弹框中"确定结束"按钮后的处理：关闭弹框并进行跳转或其他后续处理
     finishExam() {
       // 删除当前标签页
       this.$store.commit('menu/REMOVE_TAG', {
@@ -598,20 +598,36 @@ export default {
       this.isAnswered = false
       const loading = Loading.service({
         text: '拼命加载中',
-        background: 'rgba(0, 0, 0, 0.7)'
+        background: 'rgba(0, 0, 0, 0.7)',
+        timeout: 8000  // 添加8秒超时
       })
-      if (this.number === 0) {
-        setTimeout(() => {
-          getQuestionDetail(this.quList[this.currentQuIndex].quId).then((res) => {
+      try {
+        if (this.number === 0) {
+          setTimeout(() => {
+            getQuestionDetail(this.quList[this.currentQuIndex].quId).then((res) => {
+              this.quDetail = res.data
+            }).catch(err => {
+              console.error('获取题目详情失败:', err);
+              this.$message.error('获取题目详情失败，请重试');
+            }).finally(() => {
+              loading.close();
+            });
+          }, 100)
+        } else if (this.number === 1) {
+          await getQuestionDetail(this.curQuId).then((res) => {
             this.quDetail = res.data
-          })
-        }, 100)
-      } else if (this.number === 1) {
-        getQuestionDetail(this.curQuId).then((res) => {
-          this.quDetail = res.data
-        })
+          }).catch(err => {
+            console.error('获取题目详情失败:', err);
+            this.$message.error('获取题目详情失败，请重试');
+          }).finally(() => {
+            loading.close();
+          });
+        }
+      } catch (error) {
+        console.error('操作失败:', error);
+        this.$message.error('操作失败，请重试');
+        loading.close();
       }
-      loading.close()
     },
 
     // 答题卡样式

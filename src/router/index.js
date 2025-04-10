@@ -356,6 +356,17 @@ export const constantRoutes = [
     }]
   },
 
+  {
+    path: '/code-executor',
+    component: Layout,
+    children: [{
+      path: '/code-executor',
+      name: 'code-executor',
+      component: () => import('@/views/codeexcutor/index'),
+      meta: { title: '在线编程', visible: true, roles: ['student'], icon: 'code' }
+    }]
+  },
+
   { path: '*', redirect: '/404', hidden: true }
 ]
 

@@ -28,6 +28,17 @@ import 'quill/dist/quill.core.css' // 引入样式
 import 'quill/dist/quill.snow.css' // snow theme
 import 'quill/dist/quill.bubble.css' // bubble theme
 
+// 导入语言文件
+import en from './locales/en_US.json'
+import cn from './locales/zh_CN.json'
+import hk from './locales/zh_HK.json'
+
+import VueI18n from 'vue-i18n'
+import $ from 'jquery'
+
+// Element-UI
+import 'element-ui/lib/theme-chalk/index.css'
+
 // 如果是开发环境，关闭一些提示
 if (process.env.NODE_ENV === 'development') {
   console.warn = function(message) {
@@ -86,9 +97,69 @@ Vue.use(ElementUI, { locale })
 
 Vue.config.productionTip = false
 
-new Vue({
-  el: '#app',
-  router,
-  store,
-  render: h => h(App)
-})
+// 国际化
+let i18n = null
+
+const initializeApp = (locale) => {
+  Vue.use(VueI18n)
+  Vue.use(ElementUI)
+  Vue.use(Card)
+  Vue.use(Dropdown)
+  Vue.use(Menu)
+  Vue.use(Button)
+  Vue.use(Input)
+  Vue.use(Spin)
+  Vue.use(Tooltip)
+  Vue.use(Upload)
+  Vue.use(Icon)
+
+  i18n = new VueI18n({
+    locale: locale,
+    fallbackLocale: 'en',
+    messages: { en, cn, hk }
+  })
+
+  new Vue({
+    i18n,
+    router,
+    store,
+    render: h => h(App)
+  }).$mount('#app')
+}
+
+const getCountry = () => {
+  // 直接初始化应用，使用默认语言
+  initializeApp('cn')
+  // 异步获取地理位置信息
+  $.ajax({
+    url: 'https://ipapi.co/json/',
+    type: 'get',
+    timeout: 5000, // 设置5秒超时
+    success(resp) {
+      try {
+        const countryCode = resp.country_code
+        if (countryCode === 'CN') {
+          // 更新为中文
+          i18n.locale = 'cn'
+        } else if (countryCode === 'HK' || countryCode === 'MO' || countryCode === 'TW') {
+          // 更新为繁体中文
+          i18n.locale = 'hk'
+        } else {
+          // 更新为英文
+          i18n.locale = 'en'
+        }
+      } catch (error) {
+        console.error('设置语言失败:', error)
+      }
+    },
+    error(error) {
+      console.error('获取地理位置失败:', error)
+    }
+  })
+}
+
+getCountry()
+
+// Ant Design Vue
+import 'ant-design-vue/dist/antd.css'
+import { Card, Dropdown, Menu, Button, Input, Spin, Tooltip, Upload, Icon } from 'ant-design-vue'

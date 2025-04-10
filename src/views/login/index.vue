@@ -135,8 +135,7 @@ export default {
       enableRegister: process.env.VUE_APP_ENABLE_REGISTER === 'true',
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }],
-        code: [{ required: true, trigger: 'blur', message: '请输入验证码' }]
+        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       loading: false,
       passwordType: 'password'
